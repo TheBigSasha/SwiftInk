@@ -77,4 +77,60 @@ final class SwiftInkTests: XCTestCase {
         print("==========")
         XCTAssert(output == expectedOutput)
     }
+
+    func testExternalFunctions() throws {
+        // Load the story
+        guard let fp = Bundle.module.path(forResource: "TestData/external_functions/ExternalFunctions", ofType: "json") else {
+            fatalError("Cannot find the story file")
+        }
+        let url = URL(fileURLWithPath: fp)
+        let jsonString = try String(contentsOf: url)
+        let story = try Story(jsonString)
+        
+        // Prepare to track the external function calls
+        var calledFunctions: [String] = []
+        
+        
+        // Bind the external functions to the story
+        try story.bindExternalFunctionGeneral(named: "onSuccess", { args in
+            NSLog("Invoked onSuccess Function with args: \(String(describing: args))")
+            calledFunctions.append("onSuccess + \(String(describing: args))")
+            return nil
+        }, lookaheadSafe: true)
+        try story.bindExternalFunctionGeneral(named: "onFailure") { args in
+            NSLog("Invoked onFailure Function")
+            calledFunctions.append("onFailure")
+            return nil
+        }
+        try story.bindExternalFunctionGeneral(named: "onDialogueEnd") { args in
+            NSLog("Invoked onDialogueEnd Function")
+            calledFunctions.append("onDialogueEnd")
+            return nil
+        }
+        
+        // Run the story, making choices as needed
+        var output = ""
+        var choiceNum = 0
+        let choices = [0, 0,1,0,1,1]
+        
+        while true {
+            let res = try story.continueMaximally()
+            output += res
+            NSLog(res)
+            if !story.currentChoices.isEmpty {
+                NSLog("Picking choice number \(choices[choiceNum]) of \(story.currentChoices.count) possible choices")
+                try story.chooseChoice(atIndex: choices[choiceNum])
+                choiceNum += 1
+            } else {
+                NSLog("No more choices available")
+                break
+            }
+        }
+        
+        // Expected sequence of external function calls
+        let expectedFunctionCalls = ["onSuccess + [Optional(100)]", "onDialogueEnd"]
+        
+        // Verify that the external functions were called in the expected order
+        XCTAssertEqual(calledFunctions, expectedFunctionCalls)
+    }
 }

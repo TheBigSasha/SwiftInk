@@ -37,7 +37,7 @@ public class Divert: Object, CustomStringConvertible {
     var _targetPointer: Pointer?
     
     
-    public var targetPathString: String? {
+    public var targetPathString: String? { //TODO: Why does target path string return weird shit like `Divert -> .^ (onDialogueEnd)` `.^` instead of the real value `onDialogueEnd` or similar? Or is this fn correct and the way we bind to externals different? How do we bind to externals and how does targetPathString tie into that?
         get {
             if targetPath == nil {
                 return nil

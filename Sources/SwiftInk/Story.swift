@@ -1840,15 +1840,21 @@ public class Story: Object {
         }
         
         if let divert = o as? Divert, divert.isExternal {
-            let name = divert.targetPathString!
+            guard let name = divert.targetPath?.lastComponent?.name! else {
+                NSLog("No name found for divert!")
+                return
+            }
+            NSLog("Analyzing function with name \(name), details: \(divert.variableDivertName ?? "No divert name")")
             if !_externals.keys.contains(name) {
                 if allowExternalFunctionFallbacks {
                     let fallbackFound = _mainContentContainer!.namedContent.keys.contains(name)
                     if !fallbackFound {
+                        NSLog("Could not find function or fallback for fn with name \(name)")
                         missingExternals.insert(name)
                     }
                 }
                 else {
+                    NSLog("Could not find function and did not try to find fallback for fn with name \(name)")
                     missingExternals.insert(name)
                 }
             }
