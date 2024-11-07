@@ -1,0 +1,8 @@
+I am the start of the file!
+Let's go to knot 1!
+Shall we go to knot_2?
+Yes!
+I am knot_2!
+Shall we go to knot_1?
+No!
+Suit yourself.
