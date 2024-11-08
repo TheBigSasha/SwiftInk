@@ -33,6 +33,10 @@ final class SwiftInkTests: XCTestCase {
     func testFogg() throws {
         try loadStoryAndTest(named: "fogg", withChoices: [0, 1])
     }
+
+    func testKnots() throws {
+        try loadStoryAndTest(named: "knot_test", withChoices: [0, 0, 1])
+    }
     
     func loadStoryAndRun(named storyName: String, withChoices choices: [Int] = []) throws -> String {
         guard let fp = Bundle.module.path(forResource: "TestData/\(storyName)/\(storyName)", ofType: "json") else {
